@@ -32,6 +32,9 @@ class TetrisShape:
 				return True
 		return False
 
+	def canShow(self, field):
+		return field.shapeInValidPosition(self)
+	
 	def tryFall(self, field, speed):
 		self._y += speed
 		if not field.shapeInValidPosition(self):
@@ -44,6 +47,10 @@ class TetrisShape:
 		if not field.shapeInValidPosition(self):
 			self._x -= numBlocks
 
+	def moveToBottom(self, field):
+		while field.shapeInValidPosition(self):
+			self._y += 1
+		self._y -= 1
 
 class IShape(TetrisShape):
 	def getCoords(self):

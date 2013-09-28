@@ -34,7 +34,7 @@ class TetrisMainWindow(QtGui.QMainWindow):
 		self.btnTogglePause.setEnabled(e)
 	
 	def togglePauseResumeText(self):
-		if self.btnTogglePause.text == 'pause':
+		if self.btnTogglePause.text() == 'pause':
 			self.btnTogglePause.setText('resume')
 		else:
 			self.btnTogglePause.setText('pause')

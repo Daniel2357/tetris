@@ -22,6 +22,7 @@ class TetrisGame(QtCore.QObject):
 		self.gameWidget = gameWidget
 		self.gameWidget.setGameField(self.field)
 		self.gameWidget.setBlockSize(self.BLOCK_SIZE)
+		self.connect(self.gameWidget, QtCore.SIGNAL('dropShape()'), self.dropCurrent)
 		
 		self.mainWindow = mainWindow
 		self.connect(mainWindow, QtCore.SIGNAL('gameStarted()'), self.startGame)
@@ -39,16 +40,19 @@ class TetrisGame(QtCore.QObject):
 				self.currentShape.tryMove(self.field, -1)
 			elif self.gameWidget.key == QtCore.Qt.Key_Right:
 				self.currentShape.tryMove(self.field, +1)
-
+			
 		if not self.currentShape.tryFall(self.field, self.FALL_SPEED * self.REFRESH_INTERVAL / 1000):
-			lastShape = self.currentShape
+			self.field.addToRows(self.currentShape)
 			if self.currentShape.atTop():
 				self.resetGame()
 			else:
 				self.currentShape = self.nextShape
-				self.nextShape = TetrisShape.TetrisShape.getRandomShape(self.field.width // 2 - 1)
-				self.gameWidget.setCurrentShape(self.currentShape)
-			self.field.addToRows(lastShape)
+				if self.currentShape.canShow(self.field):
+					self.nextShape = TetrisShape.TetrisShape.getRandomShape(self.field.width // 2 - 1)
+					self.gameWidget.setCurrentShape(self.currentShape)
+				else:
+					self.resetGame()
+			
 		self.gameWidget.update()
 	
 	def startGame(self):	
@@ -79,4 +83,7 @@ class TetrisGame(QtCore.QObject):
 		self.gameWidget.setCurrentShape(None)
 		self.mainWindow.setStartButtonEnabled(True)
 		self.mainWindow.setTogglePauseButtonEnabled(False)
+		
+	def dropCurrent(self):
+		self.currentShape.moveToBottom(self.field)
 		

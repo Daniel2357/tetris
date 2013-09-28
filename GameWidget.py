@@ -48,12 +48,12 @@ class GameWidget(QtGui.QWidget):
 		painter.fillRect(x + 1, y + 1, self.blockSize - 2, self.blockSize - 2, color)
 
 	def keyPressEvent(self, e):
-		self.keyPressed = True
-		self.key = e.key()
-		super().keyPressEvent(e)
+		if e.key() == QtCore.Qt.Key_Space:
+			self.emit(QtCore.SIGNAL('dropShape()'))
+		else:
+			self.keyPressed = True
+			self.key = e.key()
 
 	def keyReleaseEvent(self, e):
 		self.keyPressed = False
-		super().keyReleaseEvent(e)
-
 
