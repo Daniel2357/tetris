@@ -38,8 +38,8 @@ class GameWidget(QtGui.QWidget):
 					self.drawSquare(p, x * self.blockSize, y * self.blockSize, self.field.getTypeAt(x, y))
 		
 	def drawCurrentShape(self, p):
-		for x,y in self.currentShape.coords:
-			self.drawSquare(p, (self.currentShape.x + x) * self.blockSize, (self.currentShape.y + y) * self.blockSize, self.currentShape.getType())
+		for x,y in self.currentShape.getCoords():
+			self.drawSquare(p, x * self.blockSize, y * self.blockSize, self.currentShape.getType())
 			
 	def drawSquare(self, painter, x, y, shape):	
 		colorTable = [0x000000, 0xCC6666, 0x66CC66, 0x6666CC, 0xCCCC66, 0xCC66CC, 0x66CCCC, 0xDAAA00]

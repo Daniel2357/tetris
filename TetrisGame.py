@@ -36,21 +36,19 @@ class TetrisGame(QtCore.QObject):
 		if self.gameWidget.keyPressed and currTime - self.lastKeyPressTime >= self.KEY_PRESS_INTERVAL:
 			self.lastKeyPressTime = currTime
 			if self.gameWidget.key == QtCore.Qt.Key_Left:
-				self.currentShape.tryMoveLeft(self.field)
+				self.currentShape.tryMove(self.field, -1)
 			elif self.gameWidget.key == QtCore.Qt.Key_Right:
-				self.currentShape.tryMoveRight(self.field)
-			
-		self.currentShape.y += (self.FALL_SPEED * self.REFRESH_INTERVAL / 1000)
-		
-		if self.field.reachedBottom(self.currentShape):
-			last = self.currentShape
+				self.currentShape.tryMove(self.field, +1)
+
+		if not self.currentShape.tryFall(self.field, self.FALL_SPEED * self.REFRESH_INTERVAL / 1000):
+			lastShape = self.currentShape
 			if self.currentShape.atTop():
 				self.resetGame()
 			else:
 				self.currentShape = self.nextShape
 				self.nextShape = TetrisShape.TetrisShape.getRandomShape(self.field.width // 2 - 1)
 				self.gameWidget.setCurrentShape(self.currentShape)
-			self.field.addToRows(last)
+			self.field.addToRows(lastShape)
 		self.gameWidget.update()
 	
 	def startGame(self):	
