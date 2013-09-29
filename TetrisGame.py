@@ -2,7 +2,7 @@ from PyQt4 import QtCore
 
 import random, time
 
-import TetrisMainWindow, TetrisField, TetrisShape
+import TetrisMainWindow, TetrisField, Polyomino
 
 class TetrisGame(QtCore.QObject):
 
@@ -13,7 +13,7 @@ class TetrisGame(QtCore.QObject):
 		self.REFRESH_INTERVAL = 10 # ms
 		self.FALL_SPEED = 10 # squares per second
 		self.BLOCK_SIZE = 20 # pixels
-		self.KEY_PRESS_INTERVAL = 50 # ms
+		self.KEY_PRESS_INTERVAL = 70 # ms
 		
 		self.field = TetrisField.TetrisField()
 		self.currentShape, self.nextShape = None, None
@@ -43,23 +43,19 @@ class TetrisGame(QtCore.QObject):
 			
 		if not self.currentShape.tryFall(self.field, self.FALL_SPEED * self.REFRESH_INTERVAL / 1000):
 			self.field.addToRows(self.currentShape)
-			if self.currentShape.atTop():
+			if self.currentShape.atTop() or not self.nextShape.canShow(self.field):
 				self.resetGame()
 			else:
 				self.currentShape = self.nextShape
-				if self.currentShape.canShow(self.field):
-					self.nextShape = TetrisShape.TetrisShape.getRandomShape(self.field.width // 2 - 1)
-					self.gameWidget.setCurrentShape(self.currentShape)
-				else:
-					self.resetGame()
-			
+				self.nextShape = Polyomino.Polyomino.getRandomPolyomino(self.field.width // 2 - 1)
+				self.gameWidget.setCurrentShape(self.currentShape)
 		self.gameWidget.update()
-	
+
 	def startGame(self):	
 		self.field.setDimensions(self.mainWindow.getFieldWidth(), self.mainWindow.getFieldHeight())
 		
-		self.currentShape = TetrisShape.TetrisShape.getRandomShape(self.field.width // 2 - 1)
-		self.nextShape = TetrisShape.TetrisShape.getRandomShape(self.field.width // 2 - 1)
+		self.currentShape = Polyomino.Polyomino.getRandomPolyomino(self.field.width // 2 - 1)
+		self.nextShape = Polyomino.Polyomino.getRandomPolyomino(self.field.width // 2 - 1)
 		
 		self.gameWidget.setCurrentShape(self.currentShape)
 		self.gameWidget.setFixedSize(self.BLOCK_SIZE * self.field.width, self.BLOCK_SIZE * self.field.height)

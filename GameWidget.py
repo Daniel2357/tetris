@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore
 
-import TetrisShape
+import Polyomino
 
 class GameWidget(QtGui.QWidget):
 
@@ -32,19 +32,23 @@ class GameWidget(QtGui.QWidget):
 		if self.currentShape != None:
 			self.drawCurrentShape(p)
 			
-		for x in range(0, self.field.width):
-			for y in range(0, self.field.height):
-				if self.field.getTypeAt(x, y) != TetrisShape.TetrisShape.NONE:
+		for x in range(self.field.width):
+			for y in range(self.field.height):
+				if self.field.getTypeAt(x, y) != Polyomino.Polyomino.NONE:
 					self.drawSquare(p, x * self.blockSize, y * self.blockSize, self.field.getTypeAt(x, y))
 		
 	def drawCurrentShape(self, p):
+		d = self.field.getDistanceToBottom(self.currentShape)
+		
 		for x,y in self.currentShape.getCoords():
 			self.drawSquare(p, x * self.blockSize, y * self.blockSize, self.currentShape.getType())
+			if d >= 2:
+				self.drawSquare(p, x * self.blockSize, (y + d) * self.blockSize, Polyomino.Polyomino.SHADOW)
 			
 	def drawSquare(self, painter, x, y, shape):	
-		colorTable = [0x000000, 0xCC6666, 0x66CC66, 0x6666CC, 0xCCCC66, 0xCC66CC, 0x66CCCC, 0xDAAA00]
+		colorTable = [0xCCCCCC, 0xCC6666, 0x66CC66, 0x6666CC, 0xCCCC66, 0xCC66CC, 0x66CCCC, 0xDAAA00]
 
-		color = QtGui.QColor(colorTable[shape + 1])
+		color = QtGui.QColor(colorTable[shape])
 		painter.fillRect(x + 1, y + 1, self.blockSize - 2, self.blockSize - 2, color)
 
 	def keyPressEvent(self, e):

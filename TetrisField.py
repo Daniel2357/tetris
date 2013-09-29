@@ -1,4 +1,4 @@
-import TetrisShape
+import Polyomino
 
 import math
 
@@ -15,23 +15,34 @@ class TetrisField:
 		self.clear()
 
 	def clear(self):
-		self._rows = [[TetrisShape.TetrisShape.NONE] * self.width for i in range(self.height)]
+		self._rows = [[Polyomino.Polyomino.NONE] * self.width for i in range(self.height)]
 
-	def setTypeAt(self, x, y, shapeType):
-		self._rows[y][x] = shapeType
+	def setTypeAt(self, x, y, polyominoType):
+		self._rows[y][x] = polyominoType
 
 	def getTypeAt(self, x, y):
 		return self._rows[y][x]
 
-	def shapeInValidPosition(self, shape):
-		for x,y in shape.getCoords():
-			if x < 0 or x >= self.width or y < 0 or y >= self.height - 1:
-				return False
-			if self.getTypeAt(x, math.ceil(y)) != TetrisShape.TetrisShape.NONE:
+	def getDistanceToBottom(self, polyomino):
+		dist = self.height
+		for x,y in polyomino.getCoords():
+			for i in range(math.ceil(y) + 1, self.height):
+				if self.getTypeAt(x, i) != Polyomino.Polyomino.NONE:
+					if i - y - 1 < dist:
+						dist = i - y - 1
+					break
+			else:
+				if self.height - y - 1 < dist:
+					dist = self.height - y - 1
+		return dist
+
+	def polyominoAtValidPosition(self, polyomino):
+		for x,y in polyomino.getCoords():
+			if x < 0 or x >= self.width or y < 0 or y > self.height - 1 or self.getTypeAt(x, math.floor(y) + 1) != Polyomino.Polyomino.NONE:
 				return False
 		return True
 
-	def addToRows(self, shape):
-		for x,y in shape.getCoords():
-			self.setTypeAt(x, math.ceil(y), shape.getType())
+	def addToRows(self, polyomino):
+		for x,y in polyomino.getCoords():
+			self.setTypeAt(x, math.ceil(y), polyomino.getType())
 

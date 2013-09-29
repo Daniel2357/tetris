@@ -11,7 +11,9 @@ app = QtGui.QApplication(sys.argv)
 
 gameWidget = GameWidget.GameWidget()
 mainWindow = TetrisMainWindow.TetrisMainWindow(gameWidget)
+
 game = TetrisGame.TetrisGame(mainWindow, gameWidget)
+
 mainWindow.show()
 
 sys.exit(app.exec_())

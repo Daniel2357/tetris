@@ -1,20 +1,21 @@
 import random
 
-class TetrisShape:
+class Polyomino:
 
 	NONE = -1
-	I_SHAPE = 0
-	J_SHAPE = 1
-	L_SHAPE = 2
-	O_SHAPE = 3
-	S_SHAPE = 4
-	T_SHAPE = 5
-	Z_SHAPE = 6
+	SHADOW = 0
+	I_SHAPE = 1
+	J_SHAPE = 2
+	L_SHAPE = 3
+	O_SHAPE = 4
+	S_SHAPE = 5
+	T_SHAPE = 6
+	Z_SHAPE = 7
 
 	@staticmethod
-	def getRandomShape(initialX):
-		shapes = [IShape, JShape, LShape, OShape, SShape, TShape, ZShape]
-		return shapes[random.randint(0, len(shapes) - 1)](initialX)
+	def getRandomPolyomino(initialX):
+		polyominos = [ITetromino, JTetromino, LTetromino, OTetromino, STetromino, TTetromino, ZTetromino]
+		return polyominos[random.randint(0, len(polyominos) - 1)](initialX)
 
 	def __init__(self, initialX):
 		self._x = initialX
@@ -33,71 +34,69 @@ class TetrisShape:
 		return False
 
 	def canShow(self, field):
-		return field.shapeInValidPosition(self)
+		return field.polyominoAtValidPosition(self)
 	
 	def tryFall(self, field, speed):
 		self._y += speed
-		if not field.shapeInValidPosition(self):
+		if not field.polyominoAtValidPosition(self):
 			self._y -= speed
 			return False
 		return True
 
 	def tryMove(self, field, numBlocks):
 		self._x += numBlocks
-		if not field.shapeInValidPosition(self):
+		if not field.polyominoAtValidPosition(self):
 			self._x -= numBlocks
 
 	def moveToBottom(self, field):
-		while field.shapeInValidPosition(self):
-			self._y += 1
-		self._y -= 1
+		self._y += field.getDistanceToBottom(self)
 
-class IShape(TetrisShape):
+class ITetromino(Polyomino):
 	def getCoords(self):
 		return ((self._x + x, self._y + y) for (x, y) in ((0, 0), (1, 0), (2, 0), (3, 0)))
 
 	def getType(self):
-		return TetrisShape.I_SHAPE
+		return Polyomino.I_SHAPE
 
-class JShape(TetrisShape):
+class JTetromino(Polyomino):
 	def getCoords(self):
 		return ((self._x + x, self._y + y) for (x, y) in ((0, 0), (0, 1), (1, 1), (2, 1)))
 
 	def getType(self):
-		return TetrisShape.J_SHAPE
+		return Polyomino.J_SHAPE
 
-class LShape(TetrisShape):
+class LTetromino(Polyomino):
 	def getCoords(self):
 		return ((self._x + x, self._y + y) for (x, y) in ((0, 1), (1, 1), (2, 1), (2, 0)))
 
 	def getType(self):
-		return TetrisShape.L_SHAPE
+		return Polyomino.L_SHAPE
 
-class OShape(TetrisShape):
+class OTetromino(Polyomino):
 	def getCoords(self):
 		return ((self._x + x, self._y + y) for (x, y) in ((0, 0), (0, 1), (1, 0), (1, 1)))
 
 	def getType(self):
-		return TetrisShape.O_SHAPE		
+		return Polyomino.O_SHAPE		
 
-class SShape(TetrisShape):
+class STetromino(Polyomino):
 	def getCoords(self):
 		return ((self._x + x, self._y + y) for (x, y) in ((0, 1), (1, 1), (1, 0), (2, 0)))
 
 	def getType(self):
-		return TetrisShape.S_SHAPE
+		return Polyomino.S_SHAPE
 
-class TShape(TetrisShape):
+class TTetromino(Polyomino):
 	def getCoords(self):
 		return ((self._x + x, self._y + y) for (x, y) in ((0, 1), (1, 1), (1, 0), (2, 1)))
 
 	def getType(self):
-		return TetrisShape.T_SHAPE
+		return Polyomino.T_SHAPE
 
-class ZShape(TetrisShape):
+class ZTetromino(Polyomino):
 	def getCoords(self):
 		return ((self._x + x, self._y + y) for (x, y) in ((0, 0), (1, 0), (1, 1), (2, 1)))
 
 	def getType(self):
-		return TetrisShape.Z_SHAPE
+		return Polyomino.Z_SHAPE
 
