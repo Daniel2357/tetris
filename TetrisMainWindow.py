@@ -20,12 +20,6 @@ class TetrisMainWindow(QtGui.QMainWindow):
 		
 	def onTogglePauseClicked(self):
 		self.emit(QtCore.SIGNAL('pauseToggled()'))
-	
-	def getFieldWidth(self):
-		return self.spinWidth.value()
-		
-	def getFieldHeight(self):
-		return self.spinHeight.value()
 		
 	def setStartButtonEnabled(self, e):
 		self.btnStart.setEnabled(e)
