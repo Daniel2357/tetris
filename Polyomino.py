@@ -32,7 +32,7 @@ class Polyomino:
 		return rand
 
 	@staticmethod
-	def getJLSTZWallKickData(startRotation, endRotation):
+	def getJLSTZWallKickOffsets(startRotation, endRotation):
 		if startRotation == Polyomino.ROT_0 and endRotation == Polyomino.ROT_90:
 			return ((0, 0), (-1, 0), (-1, 1), (0, -2), (-1, -2))
 		elif startRotation == Polyomino.ROT_90 and endRotation == Polyomino.ROT_0:
@@ -51,7 +51,7 @@ class Polyomino:
 			return ((0, 0), (1, 0), (1, 1), (0, -2), (1, -2))
 
 	@staticmethod
-	def getIWallKickData(startRotation, endRotation):
+	def getIWallKickOffsets(startRotation, endRotation):
 		if startRotation == Polyomino.ROT_0 and endRotation == Polyomino.ROT_90:
 			return ((0, 0), (-2, 0), (1, 0), (-2, -1), (1, 2))
 		elif startRotation == Polyomino.ROT_90 and endRotation == Polyomino.ROT_0:
@@ -106,7 +106,7 @@ class Polyomino:
 		startRotation = self._rotation
 		self._rotateCounterClockwise()
 		
-		for x,y in self.getWallKickData(startRotation, self._rotation):
+		for x,y in self.getWallKickOffsets(startRotation, self._rotation):
 			self._x += x
 			self._y += y
 			if field.polyominoAtValidPosition(self):
@@ -114,13 +114,13 @@ class Polyomino:
 			self._x -= x
 			self._y -= y
 		else:
-			self._rotateClockwise(self)
+			self._rotateClockwise()
 
 	def tryRotateClockwise(self, field):
 		startRotation = self._rotation
 		self._rotateClockwise()
 		
-		for x,y in self.getWallKickData(startRotation, self._rotation):
+		for x,y in self.getWallKickOffsets(startRotation, self._rotation):
 			self._x += x
 			self._y += y
 			if field.polyominoAtValidPosition(self):
@@ -128,7 +128,7 @@ class Polyomino:
 			self._x -= x
 			self._y -= y
 		else:
-			self._rotateCounterClockwise(self)
+			self._rotateCounterClockwise()
 
 	def _rotateCounterClockwise(self):
 		self._rotation = (self._rotation - 1) % 4
@@ -153,8 +153,8 @@ class ITetromino(Polyomino):
 		elif self._rotation == Polyomino.ROT_270:
 			return ((self._x + x, self._y + y) for (x,y) in ((1, 0), (1, -1), (1, -2), (1, -3)))
 
-	def getWallKickData(self, startRotation, endRotation):
-		return Polyomino.getIWallKickData(startRotation, endRotation)
+	def getWallKickOffsets(self, startRotation, endRotation):
+		return Polyomino.getIWallKickOffsets(startRotation, endRotation)
 	
 	def getType(self):
 		return Polyomino.I_SHAPE
@@ -173,8 +173,8 @@ class JTetromino(Polyomino):
 		elif self._rotation == Polyomino.ROT_270:
 			return ((self._x + x, self._y + y) for (x,y) in ((1, 0), (1, -1), (1, -2), (0, -2)))
 
-	def getWallKickData(self, startRotation, endRotation):
-		return Polyomino.getJLSTZWallKickData(startRotation, endRotation)
+	def getWallKickOffsets(self, startRotation, endRotation):
+		return Polyomino.getJLSTZWallKickOffsets(startRotation, endRotation)
 
 	def getType(self):
 		return Polyomino.J_SHAPE
@@ -193,8 +193,8 @@ class LTetromino(Polyomino):
 		elif self._rotation == Polyomino.ROT_270:
 			return ((self._x + x, self._y + y) for (x,y) in ((0, 0), (1, 0), (1, -1), (1, -2)))
 
-	def getWallKickData(self, startRotation, endRotation):
-		return Polyomino.getJLSTZWallKickData(startRotation, endRotation)
+	def getWallKickOffsets(self, startRotation, endRotation):
+		return Polyomino.getJLSTZWallKickOffsets(startRotation, endRotation)
 
 	def getType(self):
 		return Polyomino.L_SHAPE
@@ -206,7 +206,7 @@ class OTetromino(Polyomino):
 	def getCoords(self):
 		return ((self._x + x, self._y + y) for (x,y) in ((0, 0), (1, 0), (0, -1), (1, -1)))
 
-	def getWallKickData(self, startRotation, endRotation):
+	def getWallKickOffsets(self, startRotation, endRotation):
 		return ((0, 0), (0,0))
 
 	def getType(self):
@@ -226,8 +226,8 @@ class STetromino(Polyomino):
 		elif self._rotation == Polyomino.ROT_270:
 			return ((self._x + x, self._y + y) for (x,y) in ((0, 0), (0, -1), (1, -1), (1, -2)))
 
-	def getWallKickData(self, startRotation, endRotation):
-		return Polyomino.getJLSTZWallKickData(startRotation, endRotation)
+	def getWallKickOffsets(self, startRotation, endRotation):
+		return Polyomino.getJLSTZWallKickOffsets(startRotation, endRotation)
 
 	def getType(self):
 		return Polyomino.S_SHAPE
@@ -246,8 +246,8 @@ class TTetromino(Polyomino):
 		elif self._rotation == Polyomino.ROT_270:
 			return ((self._x + x, self._y + y) for (x,y) in ((1, 0), (0, -1), (1, -1), (1, -2)))
 
-	def getWallKickData(self, startRotation, endRotation):
-		return Polyomino.getJLSTZWallKickData(startRotation, endRotation)
+	def getWallKickOffsets(self, startRotation, endRotation):
+		return Polyomino.getJLSTZWallKickOffsets(startRotation, endRotation)
 
 	def getType(self):
 		return Polyomino.T_SHAPE
@@ -266,8 +266,8 @@ class ZTetromino(Polyomino):
 		elif self._rotation == Polyomino.ROT_270:
 			return ((self._x + x, self._y + y) for (x,y) in ((1, 0), (0, -1), (1, -1), (0, -2)))
 
-	def getWallKickData(self, startRotation, endRotation):
-		return Polyomino.getJLSTZWallKickData(startRotation, endRotation)
+	def getWallKickOffsets(self, startRotation, endRotation):
+		return Polyomino.getJLSTZWallKickOffsets(startRotation, endRotation)
 		
 	def getType(self):
 		return Polyomino.Z_SHAPE

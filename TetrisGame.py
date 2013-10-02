@@ -13,10 +13,10 @@ class TetrisGame(QtCore.QObject):
 		self.REFRESH_INTERVAL = 10 # ms
 		self.FALL_SPEED = 5 # squares per second
 		self.BLOCK_SIZE = 20 # pixels
-		self.KEY_PRESS_INTERVAL = 60 # ms
+		self.KEY_PRESS_INTERVAL = 65 # ms
 		
 		self.field = TetrisField.TetrisField()
-		self.currentShape, self.nextShape = None, None
+		self.currentPolyomino, self.nextPolyominos = None, []
 		self.lastKeyPressTime = 0
 		
 		self.gameWidget = gameWidget
@@ -39,30 +39,33 @@ class TetrisGame(QtCore.QObject):
 		if self.gameWidget.keyPressed and currTime - self.lastKeyPressTime >= self.KEY_PRESS_INTERVAL:
 			self.lastKeyPressTime = currTime
 			if self.gameWidget.key == QtCore.Qt.Key_Left:
-				self.currentShape.tryMove(self.field, -1)
+				self.currentPolyomino.tryMove(self.field, -1)
 			elif self.gameWidget.key == QtCore.Qt.Key_Right:
-				self.currentShape.tryMove(self.field, +1)
+				self.currentPolyomino.tryMove(self.field, +1)
 			
-		if not self.currentShape.tryFall(self.field, self.FALL_SPEED * self.REFRESH_INTERVAL / 1000):
-			self.field.addToRows(self.currentShape)
+		if not self.currentPolyomino.tryFall(self.field, self.FALL_SPEED * self.REFRESH_INTERVAL / 1000):
+			self.field.addToRows(self.currentPolyomino)
 			self.field.clearFullRows()
-			if not self.nextShape.canShow(self.field) or not self.currentShape.isVisible(self.field):
+			if not self.nextPolyominos[0].canShow(self.field) or not self.currentPolyomino.isVisible(self.field):
 				self.resetGame()
 			else:
-				self.currentShape = self.nextShape
-				self.nextShape = Polyomino.Polyomino.getRandomPolyomino(self.field)
-				self.gameWidget.setCurrentShape(self.currentShape)
+				self.currentPolyomino = self.nextPolyominos[0]
+				del self.nextPolyominos[0]
+				self.nextPolyominos += [Polyomino.Polyomino.getRandomPolyomino(self.field)]
+				self.gameWidget.setCurrentPolyomino(self.currentPolyomino)
+				self.gameWidget.setNextPolyominos(self.nextPolyominos)
 		self.gameWidget.update()
 
 	def startGame(self):
 		self.field.clear()
 		
-		self.currentShape = Polyomino.Polyomino.getRandomPolyomino(self.field)
-		self.nextShape = Polyomino.Polyomino.getRandomPolyomino(self.field)
+		self.currentPolyomino = Polyomino.Polyomino.getRandomPolyomino(self.field)
+		self.nextPolyominos = [Polyomino.Polyomino.getRandomPolyomino(self.field), Polyomino.Polyomino.getRandomPolyomino(self.field), Polyomino.Polyomino.getRandomPolyomino(self.field)]
 		
-		self.gameWidget.setCurrentShape(self.currentShape)
-		self.gameWidget.setFixedSize(self.BLOCK_SIZE * self.field.width, self.BLOCK_SIZE * self.field.height)
+		self.gameWidget.setCurrentPolyomino(self.currentPolyomino)
+		self.gameWidget.setNextPolyominos(self.nextPolyominos)
 		self.gameWidget.setFocus()
+		self.gameWidget.setFixedSize(self.gameWidget.minimumSizeHint())
 		self.mainWindow.setFixedSize(self.mainWindow.minimumWidth(), self.mainWindow.minimumHeight())
 		
 		self.mainWindow.setStartButtonEnabled(False)
@@ -79,16 +82,17 @@ class TetrisGame(QtCore.QObject):
 			
 	def resetGame(self):
 		self.timer.stop()
-		self.gameWidget.setCurrentShape(None)
+		self.gameWidget.setCurrentPolyomino(None)
+		self.gameWidget.setNextPolyominos([])
 		self.mainWindow.setStartButtonEnabled(True)
 		self.mainWindow.setTogglePauseButtonEnabled(False)
 		
 	def dropShape(self):
-		self.currentShape.moveToBottom(self.field)
+		self.currentPolyomino.moveToBottom(self.field)
 
 	def rotateShapeCounterClockwise(self):
-		self.currentShape.tryRotateCounterClockwise(self.field)
+		self.currentPolyomino.tryRotateCounterClockwise(self.field)
 
 	def rotateShapeClockwise(self):
-		self.currentShape.tryRotateClockwise(self.field)
+		self.currentPolyomino.tryRotateClockwise(self.field)
 
